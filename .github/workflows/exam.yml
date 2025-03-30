@@ -1,0 +1,26 @@
+name: exam-test-app-sql
+
+on:
+ push:
+  branches:
+   main:
+
+jobs:
+ app-db:
+  runs-on: ubuntu:latest
+  steps:
+    - name: Checkout source code
+      uses: actions/checkout@v3
+
+    - name: Set up docker compose
+      run: |
+        docker compose up -d
+        echo "Waiting"
+        sleep 20
+
+    - name: Test API
+      run: docker compose exec -it app_server curl http://localhost:5000/api/users
+
+    - name: Shoutdown docker compose
+      if: always()
+      run: docer compose down -v
